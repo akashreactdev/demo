@@ -1,0 +1,86 @@
+"use client";
+import React, { useState } from "react";
+
+export default function MaxPoints() {
+  const [s, setS] = useState("cdbcbbaaabab");
+  const [x, setX] = useState(4);
+  const [y, setY] = useState(5);
+  const [result, setResult] = useState(null);
+
+  const calculateMaxPoints = (s, x, y) => {
+    const removePair = (str, a, b, points) => {
+      let stack = [];
+      let score = 0;
+
+      for (let ch of str) {
+        if (stack.length > 0 && stack[stack.length - 1] === a && ch === b) {
+          stack.pop();
+          score += points;
+        } else {
+          stack.push(ch);
+        }
+      }
+
+      return { newString: stack.join(""), score };
+    };
+
+    let total = 0;
+
+    if (x > y) {
+      let first = removePair(s, "a", "b", x);
+      total += first.score;
+
+      let second = removePair(first.newString, "b", "a", y);
+      total += second.score;
+    } else {
+      let first = removePair(s, "b", "a", y);
+      total += first.score;
+
+      let second = removePair(first.newString, "a", "b", x);
+      total += second.score;
+    }
+
+    return total;
+  };
+
+  const handleCalculate = () => {
+    setResult(calculateMaxPoints(s, x, y));
+  };
+
+  return (
+    <div style={{ padding: 20 }}>
+      <h2>Max Points Calculator</h2>
+
+      <div>
+        <label>String: </label>
+        <input value={s} onChange={(e) => setS(e.target.value)} />
+      </div>
+
+      <div>
+        <label>x (remove "ab"): </label>
+        <input
+          type="number"
+          value={x}
+          onChange={(e) => setX(Number(e.target.value))}
+        />
+      </div>
+
+      <div>
+        <label>y (remove "ba"): </label>
+        <input
+          type="number"
+          value={y}
+          onChange={(e) => setY(Number(e.target.value))}
+        />
+      </div>
+
+      <button onClick={handleCalculate} style={{ marginTop: 10 }}>
+        Calculate
+      </button>
+
+      {result !== null && (
+        <h3 style={{ marginTop: 20 }}>Maximum Points: {result}</h3>
+      )}
+    </div>
+  );
+}
